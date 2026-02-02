@@ -96,7 +96,7 @@ function updateFooterYear() {
 
 // Supported file types and formats
 const SUPPORTED_MIME_TYPES = {
-    'image': ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/bmp', 'image/tiff', 'image/svg+xml'],
+    'image': ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/bmp', 'image/tiff', 'image/svg+xml', 'image/heic', 'image/heif'],
     'audio': ['audio/mpeg', 'audio/wav', 'audio/ogg', 'audio/flac', 'audio/aac'],
     'archive': ['application/zip', 'application/x-tar']
 };
@@ -217,6 +217,23 @@ async function handleFiles(files) {
         return;
     }
 
+    // HEIC/HEIF: convert to JPEG in memory, then treat as native JPG
+    if (isHeicHeif(file)) {
+        try {
+            const blob = await convertHeicToJpeg(file);
+            const jpgName = file.name.replace(/\.(heic|heif)$/i, '.jpg');
+            currentFile = new File([blob], jpgName, { type: 'image/jpeg' });
+            Logger.info('HEIC/HEIF converted to JPEG, showing conversion options');
+            showConversionOptions('image/jpeg', 'jpg');
+        } catch (err) {
+            Logger.error('HEIC/HEIF conversion failed', err);
+            conversionOptions.classList.add('active');
+            conversionOptions.innerHTML = '';
+            showMessage('HEIC/HEIF conversion failed. ' + (err && err.message ? err.message : 'Not supported.'), 'error');
+        }
+        return;
+    }
+
     currentFile = file;
     Logger.info('File validated successfully, showing conversion options');
     showConversionOptions(file.type, validation.extension);
@@ -251,7 +268,7 @@ function validateFileType(file) {
 
     // If MIME type is not recognized, check file extension
     const extensionMap = {
-        'image': ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'tiff', 'tif', 'svg'],
+        'image': ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'tiff', 'tif', 'svg', 'heic', 'heif'],
         'audio': ['mp3', 'wav', 'ogg', 'flac', 'aac'],
         'archive': ['zip', 'tar']
     };
@@ -264,7 +281,7 @@ function validateFileType(file) {
 
     // Show error message to user for unsupported file type
     const errorMessage = `Unsupported file type: ${fileExtension.toUpperCase()}. Please upload one of the following:\n` +
-        '• Images (JPG, PNG, GIF, WEBP, BMP, TIFF, SVG)\n' +
+        '• Images (JPG, PNG, GIF, WEBP, BMP, TIFF, SVG, HEIC/HEIF)\n' +
         '• Audio (MP3, WAV, OGG, FLAC, AAC)\n' +
         '• Archives (ZIP, TAR)';
     
@@ -272,6 +289,24 @@ function validateFileType(file) {
     Logger.warn('Unsupported file type', { fileType, fileExtension });
 
     return { valid: false, category: null, extension: fileExtension };
+}
+
+// HEIC/HEIF: detect by MIME or extension
+function isHeicHeif(file) {
+    const t = (file.type || '').toLowerCase();
+    const ext = (file.name || '').split('.').pop().toLowerCase();
+    return t === 'image/heic' || t === 'image/heif' || ext === 'heic' || ext === 'heif';
+}
+
+// HEIC/HEIF → JPEG in memory using heic2any (WASM). Returns single Blob; rejects on error.
+async function convertHeicToJpeg(file) {
+    if (typeof heic2any !== 'function') {
+        throw new Error('HEIC conversion not available.');
+    }
+    const result = await heic2any({ blob: file, toType: 'image/jpeg', quality: 1 });
+    const blob = Array.isArray(result) ? result[0] : result;
+    if (!blob) throw new Error('No image produced.');
+    return blob;
 }
 
 function showConversionOptions(fileType, fileExtension) {
