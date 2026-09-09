@@ -1,6 +1,6 @@
 # Media Converter
 
-Convert your media files instantly with our free online tool. Transform images, audio, and video files into different formats with just a few clicks - no registration required.
+Convert your media files instantly with our free online tool. Transform images and audio files between formats, or repack ZIP and TAR archives, with just a few clicks, no registration required.
 
 [![Convert Now](https://img.shields.io/badge/Convert_Now-💫-white)](https://convert.nonprofittools.org/)
 
