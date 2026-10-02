@@ -338,10 +338,11 @@ function showConversionOptions(fileType, fileExtension) {
 
     // Conversion Buttons
     const supportedFormats = getSupportedFormats(fileType, fileExtension);
-    supportedFormats.forEach(format => {
+    supportedFormats.forEach((format, index) => {
         const button = document.createElement('button');
-        button.className = 'conversion-button';
-        button.innerHTML = `<i class="fas fa-download"></i> Convert to ${format}`;
+        // First Convert button is the one filled action; the rest are soft.
+        button.className = 'ght-btn conversion-button' + (index === 0 ? ' ght-btn--primary' : '');
+        button.innerHTML = `<i class="fas fa-arrow-right-arrow-left" aria-hidden="true"></i> Convert to ${format}`;
         button.addEventListener('click', () => {
             console.log('Converting to:', format);
             convertFile(format);

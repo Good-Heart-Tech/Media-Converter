@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="color-scheme" content="light">
     <link rel="stylesheet" href="ght-variables.css">
+    <link rel="stylesheet" href="ght-buttons.css">
     <title>Media Converter - Convert Your Files</title>
     <link rel="icon" type="image/svg+xml" href="https://graphics.goodhearttech.org/GHT/favicons/favicon.svg">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -118,7 +119,7 @@
             background-color: color-mix(in srgb, var(--wash) 30%, white);
         }
 
-        .upload-area i {
+        .upload-area > i {
             font-size: 3rem;
             color: var(--link);
             margin-bottom: 1rem;
@@ -200,36 +201,14 @@
             display: block;
         }
 
-        /* Rich black on primary is 7:1; hover swaps to white on huduPrimary (4.7:1). */
+        /* Button look comes from ght-buttons.css (ght-btn). Layout only here. */
         .conversion-button {
-            background-color: var(--ght-palette-primary);
-            color: var(--ght-palette-rich-black);
-            border: none;
-            padding: 0.8rem 1.5rem;
-            border-radius: 4px;
-            font-family: inherit;
-            font-size: 1rem;
-            font-weight: var(--ght-font-weight-semibold);
-            cursor: pointer;
             margin: 0.5rem;
-            transition: background-color 0.3s ease, color 0.3s ease;
         }
 
-        .conversion-button:hover {
-            background-color: var(--ght-palette-hudu-primary);
-            color: var(--ght-palette-white);
-        }
-
-        .conversion-button:focus-visible,
         .upload-area:focus-visible {
             outline: 3px solid var(--ght-palette-primary);
             outline-offset: 3px;
-        }
-
-        .conversion-button:disabled {
-            background-color: var(--wash);
-            color: var(--text);
-            cursor: not-allowed;
         }
 
         .progress-container {
@@ -429,8 +408,8 @@
                 <i class="fas fa-cloud-upload-alt"></i>
                 <h2>Drag and drop your file here</h2>
                 <p>or</p>
-                <button class="conversion-button" onclick="document.getElementById('fileInput').click()">
-                    Choose File
+                <button class="ght-btn conversion-button" onclick="document.getElementById('fileInput').click()">
+                    <i class="fas fa-folder-open" aria-hidden="true"></i> Choose file
                 </button>
                 <input type="file" id="fileInput" accept="*/*">
             </div>
